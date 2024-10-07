@@ -4,14 +4,14 @@
 [![Issues][issues-shield]][issues-url]
 <!-- [![MIT License][license-shield]][license-url] -->
 <!-- [![MyHomePage][linkedin-shield]][linkedin-url] -->
-
+<!-- ![](https://komarev.com/ghpvc/?username=ZHU-Zhiyu&color=green) -->
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
 
   <h3 align="center">Learning Efficient and Effective Trajectories for Differential Equation-based Image Restoration</h3>
   <p align="center">
-    <a href="XXX">Paper</a>
+    <a href="https://github.com/ZHU-Zhiyu/FLUX-IR/tree/master/Assets/Manuscript.pdf">Paper</a>
     ·
     <a href="https://github.com/ZHU-Zhiyu/FLUX-IR/issues">Report Bug</a>
     ·
