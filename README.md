@@ -62,6 +62,7 @@
 <img src='./Assets/animals&people/72.gif' width='230'> <img src='./Assets/animals&people/82.gif' width='230'>  -->
 
 ## News!!
+- :fire::fire::fire: [18/03/2025] Revised manuscript are updated;
 - :fire::fire::fire: [07/10/2024] Project page and paper are released.
 
 <!-- ## To do list -->
