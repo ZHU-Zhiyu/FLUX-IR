@@ -1,12 +1,5 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/ZHU-Zhiyu/NVS_Solver/pull/73 -->
 <a name="readme-top"></a>
 
-[![Issues][issues-shield]][issues-url]
-<!-- [![MIT License][license-shield]][license-url] -->
-<!-- [![MyHomePage][linkedin-shield]][linkedin-url] -->
-<!-- ![](https://komarev.com/ghpvc/?username=ZHU-Zhiyu&color=green) -->
-<!-- PROJECT LOGO -->
-<br />
 <div align="center">
 
   <h3 align="center">Learning Efficient and Effective Trajectories for Differential Equation-based Image Restoration</h3>
