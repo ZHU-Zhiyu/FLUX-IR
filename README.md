@@ -20,5 +20,5 @@
 </div>
 
 ## News!!
-- :fire::fire::fire: [18/03/2025] Revised manuscript is updated;
+- :fire::fire::fire: [18/03/2025] The revised manuscript is updated;
 - :fire::fire::fire: [07/10/2024] Project page and paper are released.
