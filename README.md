@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <h3 align="center">Learning Efficient and Effective Trajectories for Differential Equation-based Image Restoration</h3>
+  <h3 align="center">[TPAMI 2025] Learning Efficient and Effective Trajectories for Differential Equation-based Image Restoration</h3>
   <p align="center">
     <a href="https://github.com/ZHU-Zhiyu/FLUX-IR/tree/master/Assets/Manuscript.pdf">Paper</a>
     ·
