@@ -1,0 +1,21 @@
+dataset: Raindrop
+dist: false
+
+#### datasets
+datasets:
+  train:
+    dist: false
+    root: your/dataset//path
+    use_shuffle: true
+    n_workers: 1
+    batch_size: 1
+    use_flip: true
+    use_crop: true
+    GT_size: 384
+
+  val:
+    dist: false
+    root: your/dataset//path
+    n_workers: 4
+    use_crop: true
+    batch_size: 1 

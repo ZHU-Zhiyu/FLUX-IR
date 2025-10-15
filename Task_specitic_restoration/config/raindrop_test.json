@@ -1,0 +1,77 @@
+{
+    "name": "raindrop_test",
+
+    "phase": "train",
+    "gpu_ids": [
+        0
+    ],
+    "seed": 2727, 
+    "path": {
+        "log": "logs",
+        "tb_logger": "tb_logger",
+        "results": "results",
+        "checkpoint": "checkpoint",
+        // "resume_state": "./checkpoints/raindrop/raindrop_rein.pth"
+        // "resume_state": "./checkpoints/raindrop/raindrop_dist2step.pth"
+        "resume_state": "./checkpoints/raindrop/raindrop_dist1step.pth"
+        },
+    "model": {
+        "which_model_G": "ddpm", 
+        "finetune_norm": false,
+        "unet": {
+            "in_channel": 6,
+            "out_channel": 3,
+            "inner_channel": 128,
+            "channel_multiplier": [
+                1,
+                1,
+                2,
+                2,
+                4
+            ],
+            "attn_res": [
+                16
+            ],
+            "res_blocks": 2,
+            "dropout": 0,
+            "rm_varconv": true
+        },
+        "beta_schedule": {
+            "train": {
+                "schedule": "linear",
+                "n_timestep": 10,
+                "linear_start": 1e-4,
+                "linear_end": 2e-2
+            },
+            "val": {
+                "schedule": "linear",
+                "n_timestep": 10,
+                "linear_start": 1e-3,
+                "linear_end": 8.3e-1
+            }
+        },
+        "diffusion": {
+            "image_size": 96,
+            "channels": 6, 
+            "conditional": true
+        }
+    },
+    "train": {
+        "n_iter": 2000000,
+        "val_freq": 50,
+        "save_checkpoint_freq": 50,
+        "print_freq": 10,
+        "optimizer": {
+            "type": "adam",
+            "lr": 5e-6
+        },
+        "ema_scheduler": {
+            "step_start_ema": 5000,
+            "update_ema_every": 1,
+            "ema_decay": 0.9999
+        }
+    },
+    "wandb": {
+        "project": "llie_ddpm"
+    }
+}
