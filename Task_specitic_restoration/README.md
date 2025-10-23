@@ -25,7 +25,7 @@ pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --e
 3. Clone Repo
 
 ```
-git clone https://github.com/jinnh/GSAD.git](https://github.com/ZHU-Zhiyu/FLUX-IR.git
+git clone https://github.com/ZHU-Zhiyu/FLUX-IR.git
 ```
 
 4. Install Dependencies
