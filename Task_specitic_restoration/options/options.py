@@ -2,7 +2,7 @@ import os
 import os.path as osp
 import logging
 import yaml
-from utils.util import OrderedYaml
+from utils.utils import OrderedYaml
 
 Loader, Dumper = OrderedYaml()
 
