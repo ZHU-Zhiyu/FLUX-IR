@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--tfboard', action='store_true')
 
-
+    parser.add_argument('-phase', type=str, default="test")
     parser.add_argument('-c', '--config', type=str, default='config/lolv1_test.json',
                         help='JSON file for configuration')
     parser.add_argument('-s', '--stage', type=str, choices=['rein', 'dist'], default='rein')
@@ -216,3 +216,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
