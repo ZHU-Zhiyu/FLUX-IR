@@ -41,7 +41,7 @@ class XFluxPipeline:
         self.ae = load_ae(model_type, device="cpu" if offload else self.device)
         
         self.ae2 = load_ae(model_type, device="cpu" if offload else self.device)
-        self.ae2.encoder.load_state_dict(torch.load('/root/autodl-tmp/project/experiments/uir_vae_encoder/encoder_lq.bin'))
+        self.ae2.encoder.load_state_dict(torch.load('checkpoints/encoder_lq.bin'))
         if "fp8" in model_type:
             self.model = load_flow_model_quintized(model_type, device="cpu" if offload else self.device)
         else:
@@ -517,7 +517,7 @@ class XFluxPipeline_REIN:
         self.ae = load_ae(model_type, device="cpu" if offload else self.device)
         
         self.ae2 = load_ae(model_type, device="cpu" if offload else self.device)
-        self.ae2.encoder.load_state_dict(torch.load('experiments/uir_vae_encoder/encoder_lq.bin'))
+        self.ae2.encoder.load_state_dict(torch.load('checkpoints/encoder_lq.bin'))
 
         if "fp8" in model_type:
             self.model = load_flow_model_quintized(model_type, device="cpu" if offload else self.device)
