@@ -13,6 +13,8 @@
 </div>
 
 ## News!!
-- :fire::fire::fire: [27/06/2025] The paper has been accepted by TPAMI. We will release the code soon;
-- :fire::fire::fire: [18/03/2025] The revised manuscript is updated;
+- :fire::fire::fire: [04/01/2026] The code for both task specific IR and unified IR has been released.
+- :fire::fire::fire: [27/06/2025] The paper has been accepted by TPAMI. We will release the code soon.
+- :fire::fire::fire: [18/03/2025] The revised manuscript is updated.
 - :fire::fire::fire: [07/10/2024] Project page and paper are released.
+
