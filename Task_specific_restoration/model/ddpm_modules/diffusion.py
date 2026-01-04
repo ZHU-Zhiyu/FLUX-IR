@@ -578,8 +578,6 @@ class GaussianDiffusion(nn.Module):
         x = x_in['LQ']
         shape = x.shape
         shape = (1, 3, shape[2], shape[3])
-        # print(shape)
-        # noise = torch.randn(shape, device=device)
 
         noise_ = torch.randn(shape, device=device)
         noise = noise_
@@ -622,6 +620,26 @@ class GaussianDiffusion(nn.Module):
                 ret_img = torch.cat([ret_img, img], dim=0)                
                 img = self.p_sample_for_distill(x_in, img, t_start=t_end, t_end=0)
                 ret_img = torch.cat([ret_img, img], dim=0) 
+                
+        elif dataset == 'UnderwaterB':
+            img = noise
+            alpha = self.alphas_cumprod1[7]
+            img = np.sqrt(alpha) * x_in['LQ'] + np.sqrt(1-alpha)*noise
+
+            ret_img = img
+
+            t_stride = 8 if NFE == 2 else 10
+            t_end = self.num_timesteps-t_stride*1
+
+            if t_stride == 10:
+                img = self.p_sample_for_distill(x_in, img, t_start=self.num_timesteps-3, t_end=t_end)
+                ret_img = torch.cat([ret_img, img], dim=0)
+            elif t_stride == 8:
+                img = self.p_sample_for_distill(x_in, img, t_start=self.num_timesteps-3, t_end=t_end)
+                ret_img = torch.cat([ret_img, img], dim=0)                
+                img = self.p_sample_for_distill(x_in, img, t_start=t_end, t_end=0)
+                ret_img = torch.cat([ret_img, img], dim=0) 
+
 
         if continous:
             return ret_img
@@ -647,7 +665,6 @@ class GaussianDiffusion(nn.Module):
             shape = x.shape
             shape = (1, 3, shape[2], shape[3])
             img = torch.randn(shape, device=device)
-            # util.set_random_seed(seedt)
             ret_img = img
             for i in tqdm(reversed(range(0, self.num_timesteps)), desc='sampling loop time step', total=self.num_timesteps):
                 img = self.p_sample(img, i, condition_x=x)
@@ -725,62 +742,6 @@ class GaussianDiffusion(nn.Module):
         return patches
 
 
-    def calcu_kmeans(self, data, num_clusters):
-
-        [b, h, w] = data.shape
-        cluster_ids_all = np.empty([b, h])
-        cluster_ids_all = torch.from_numpy(cluster_ids_all)
-        for i in range(b):
-            # cluster_ids, cluster_centers = kmeans(
-            #     X=data[i,:,:], num_clusters=num_clusters, distance='euclidean', device=torch.device('cuda:0')
-            # )
-
-            # DBSCAN
-            # model = DBSCAN(eps=5)
-            # cluster_ids = model.fit_predict(data[i,:,:].cpu())
-            # cluster_ids = torch.from_numpy(cluster_ids).cuda()
-
-            # # MeanShift
-            # model = MeanShift()
-            # cluster_ids = model.fit_predict(data[i,:,:].cpu())
-            # cluster_ids = torch.from_numpy(cluster_ids).cuda()
-
-            # # Spectral Clustering
-            # model = SpectralClustering(n_clusters=num_clusters)
-            # cluster_ids = model.fit_predict(transform(data[i,:,:].cpu()))
-            # cluster_ids = torch.from_numpy(cluster_ids).cuda()
-
-            # Hierarchical Clustering
-            model = AgglomerativeClustering(n_clusters=num_clusters)
-            cluster_ids = model.fit_predict(transform(data[i,:,:].cpu()))
-            cluster_ids = torch.from_numpy(cluster_ids).cuda()
-
-            # # gmm
-            # model = GaussianMixture(n_components=num_clusters)
-            # model.fit(data[i,:,:].cpu())
-            # cluster_ids = model.predict(data[i,:,:].cpu())
-            # cluster_ids = torch.from_numpy(cluster_ids).cuda()
-            # print(cluster_ids)
-
-            # # kmeans
-            # km = kmeans_core(k=num_clusters,data_array=data[i,:,:].cpu().numpy(),batch_size=400,epochs=1000)
-            # km.run()
-            # cluster_ids = km.idx
-
-            # print(cluster_ids)
-            cluster_ids_all[i, :] = cluster_ids
-        
-        return cluster_ids_all
-
-    def calcu_svd(self, data):
-
-        u, sv, v = torch.svd(data)
-        #sv_F2 = torch.norm(sv, dim=1)
-        #sv_F2 = sv_F2.unsqueeze(1)
-        #normalized_sv = sv / sv_F2
-
-        return sv
-
     def calcu_svd_distance(self, data1, data2, cluster_ids, num_clusters):
 
         [b, h, w] = data1.shape 
@@ -802,58 +763,7 @@ class GaussianDiffusion(nn.Module):
         return sv_ab_dis
     
 
-    def calcu_dis_distance(self, data1, data2, cluster_ids, num_clusters, emb_net):
 
-        [b, h, w] = data1.shape 
-        sv_ab_dis = np.empty([b, num_clusters])
-        sv_ab_dis = torch.from_numpy(sv_ab_dis)
-        for i in range(num_clusters):
-
-            indices = (cluster_ids[0] ==i).nonzero(as_tuple=True)[0]
-            
-            if len(indices)==0:
-                sv_ab_dis[:, i] = 1e-5
-            else:
-                data1_select = torch.index_select(data1, 1, indices.cuda())
-                data2_select = torch.index_select(data2, 1, indices.cuda())
-
-                sv1 = emb_net(data1_select)
-                sv2 = emb_net(data2_select)
-                # sv1 = self.calcu_svd(data1_select.cpu())
-                # print(sv1.shape)
-                # batch, N, V = data1_select.shape
-                # graph_data_list1 = []
-                # graph_data_list2 = []
-                # for j in range(batch):
-
-                #     edge_index = torch.randint(0, N, (2, N))
-
-                #     x1 = data1_select[j,:,:]
-                #     gcndata1 = Data(x=x1, edge_index=edge_index)
-                #     graph_data_list1.append(gcndata1)
-
-                #     x2 = data2_select[j,:,:]
-                #     gcndata2 = Data(x=x2, edge_index=edge_index)
-                #     graph_data_list2.append(gcndata2)
-
-                # loader1 = DataLoader(graph_data_list1, batch_size=batch)
-                # loader2 = DataLoader(graph_data_list2, batch_size=batch)
-                # for batch_data in loader1:
-                #     sv1 = emb_net(batch_data.cuda())
-
-                # for batch_data in loader2:
-                #     sv2 = emb_net(batch_data.cuda())
-                
-                # # B, N, V = data1_select.shape
-                # # batch = torch.arange(B).repeat_interleave(N)
-                # # edge_index = torch.randint(0, N, (2, N))
-
-                # # sv1 = emb_net(data1_select.reshape(B * N, V), edge_index.cuda(), batch.cuda())
-                # # sv2 = emb_net(data2_select.reshape(B * N, V), edge_index.cuda(), batch.cuda())
-
-                sv_ab_dis_i = torch.abs(sv1 - sv2)
-                sv_ab_dis[:, i] = torch.sum(sv_ab_dis_i, dim=1)
-        return sv_ab_dis    
 
 
     def reduce_mean(self, out_im, gt_im):
@@ -874,7 +784,6 @@ class GaussianDiffusion(nn.Module):
 
         x_start = x_in['GT']
         [b, c, h, w] = x_start.shape
-        # print('t', t)
         if t == None:
             t = np.random.randint(1, self.num_timesteps + 1)
 
@@ -885,7 +794,6 @@ class GaussianDiffusion(nn.Module):
                 size=b
             )
         ).to(x_start.device)
-        # print(continuous_sqrt_alpha_cumprod)
         continuous_sqrt_alpha_cumprod = continuous_sqrt_alpha_cumprod.view(
             b, -1)
 
@@ -897,66 +805,11 @@ class GaussianDiffusion(nn.Module):
         if not self.conditional:
             x_recon = self.denoise_fn(x_noisy, continuous_sqrt_alpha_cumprod)
         else:
-            # with torch.no_grad():
-            #     restored, transformer_features = pretrained_transformer(transform(x_in))
+
             x_recon, derained_img = self.denoise_fn(
                 torch.cat([x_in['LQ'], x_noisy], dim=1), continuous_sqrt_alpha_cumprod)
 
-        # loss_pix = self.loss_func(x_recon, noise)
-
-
-        # # feature embedding
-        # x_0 = x_start
-        # x_0_patches = self.to_patches(x_0, kernel_size=8) 
-
-        # x_t_1 = self.predict_t_minus1(x_noisy, t-1, 
-        #         continuous_sqrt_alpha_cumprod=continuous_sqrt_alpha_cumprod.view(-1, 1, 1, 1), 
-        #         noise=x_recon) 
-        # x_t_1_patches = self.to_patches(x_t_1, kernel_size=8)
-
-
-        # cluster_ids = self.calcu_kmeans(x_0_patches, num_clusters=6)
-        # svd_dis = self.calcu_dis_distance(x_0_patches, x_t_1_patches, cluster_ids=cluster_ids, num_clusters=6, emb_net=uct_model)
-        # # print(t, continuous_sqrt_alpha_cumprod**4)
-        # loss_emb = svd_dis.cuda()  * continuous_sqrt_alpha_cumprod**4
-        # self.loss_func(x_recon, noise) +
         loss_pix = self.loss_func(derained_img, x_in['GT'])
-
-
-
-        # ------------------- global structure ------------------- #
-        # x_0 = x_start
-        # x_0_patches = self.to_patches(x_0, kernel_size=8) 
-
-        # x_t_1 = self.predict_t_minus1(x_noisy, t-1, 
-        #         continuous_sqrt_alpha_cumprod=continuous_sqrt_alpha_cumprod.view(-1, 1, 1, 1), 
-        #         noise=x_recon) 
-        # x_t_1_patches = self.to_patches(x_t_1, kernel_size=8)
-
-
-        # cluster_ids = self.calcu_kmeans(x_0_patches, num_clusters=6)
-        # svd_dis = self.calcu_svd_distance(x_0_patches, x_t_1_patches, cluster_ids=cluster_ids, num_clusters=6)
-
-
-        # lambda_ = 10
-        # loss_pix = self.loss_func(x_recon, noise) * lambda_
-
-        # loss_s = svd_dis.cuda() * continuous_sqrt_alpha_cumprod**4
-
-        # --------------------- perceptual_loss --------------------- #
-        # x_0 = x_start
-        # x_t_1 = self.predict_t_minus1(x_noisy, t-1, continuous_sqrt_alpha_cumprod=continuous_sqrt_alpha_cumprod.view(-1, 1, 1, 1), noise=x_recon) 
-        
-        # loss_pix = self.loss_func(x_recon, noise)
-        # p_loss = self.perceptual_loss(transform(x_t_1.cpu()).cuda(), transform(x_0.cpu()).cuda(), vgg_model)
-        # loss_s = p_loss # * continuous_sqrt_alpha_cumprod**4
-
-
-        # -------------------- L1 ||x_t_1 - x0|| -------------------- #
-        # loss_pix = self.loss_func(x_recon, noise) 
-        # svd_dis = self.loss_func(x_t_1, x_0)
-        # print(t, loss_pix, svd_dis)
-        # loss_s = svd_dis #* continuous_sqrt_alpha_cumprod**4
 
 
         return loss_pix

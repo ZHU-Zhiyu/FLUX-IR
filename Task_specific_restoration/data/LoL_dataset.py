@@ -30,7 +30,7 @@ class DID_Dataset(data.Dataset):
         self.pairs = self.load_pairs(self.root)
         self.to_tensor = ToTensor()
         
-        self.small_rain = self.pairs[:6000]  # 小雨条图像
+        self.small_rain = self.pairs[:6000]  
         self.large_rain = self.pairs[6000:] 
 
     def __len__(self):
@@ -76,35 +76,12 @@ class DID_Dataset(data.Dataset):
             else:
                 lr, hr, f_name = self.large_rain[5999-item // 2]
             
-        # lr, hr, f_name = self.pairs[item]
-        # print('item', item, index, f_name)
-        # hr = hr[0:480, 0:720, :]
-        # lr = lr[0:480, 0:720, :]
-        # print(f_name, hr.shape, lr.shape, self.crop_size)
-
 
         if self.use_crop and self.split != 'val':
             hr, lr = random_crop(hr, lr, self.crop_size)
         elif self.split == 'val':
-            # print(hr.shape)
-            # lr = cv2.resize(lr, (480, 480))
-            # hr = cv2.resize(hr, (480, 480))
             lr = cv2.resize(lr, (lr.shape[1] // 16 * 16, lr.shape[0] // 16 * 16))
             hr = cv2.resize(hr, (hr.shape[1] // 16 * 16, hr.shape[0] // 16 * 16))
-            # print(hr.shape)
-
-        # elif self.use_crop and self.split == 'val':
-        #     h = int(hr.shape[0]/32)
-        #     w = int(hr.shape[1]/32)
-        #     # print(hr.shape)
-        #     # print(h,w)
-        #     # print(int((hr.shape[0]-h*32)/2), int(hr.shape[0]-(hr.shape[0]-h*32)/2))
-        #     # assert(1==2)
-        #     hr = hr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-        #     lr = lr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-
-        # if self.center_crop_hr_size:
-        #     hr, lr = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size)
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -178,11 +155,6 @@ class DDN_Dataset(data.Dataset):
     def __getitem__(self, item):
             
         lr, hr, f_name = self.pairs[item]
-        # print('item', item, index, f_name)
-        # hr = hr[0:480, 0:720, :]
-        # lr = lr[0:480, 0:720, :]
-        # print(f_name, hr.shape, lr.shape, self.crop_size)
-
 
         if self.use_crop and self.split != 'val':
             if '837' not in f_name:
@@ -191,25 +163,8 @@ class DDN_Dataset(data.Dataset):
                 lr = cv2.resize(lr, (self.crop_size, self.crop_size))
                 hr = cv2.resize(hr, (self.crop_size, self.crop_size))   
         elif self.split == 'val':
-            # print(hr.shape)
-            # lr = cv2.resize(lr, (480, 480))
-            # hr = cv2.resize(hr, (480, 480))
             lr = cv2.resize(lr, (lr.shape[1] // 16 * 16, lr.shape[0] // 16 * 16))
             hr = cv2.resize(hr, (hr.shape[1] // 16 * 16, hr.shape[0] // 16 * 16))
-            # print(hr.shape)
-
-        # elif self.use_crop and self.split == 'val':
-        #     h = int(hr.shape[0]/32)
-        #     w = int(hr.shape[1]/32)
-        #     # print(hr.shape)
-        #     # print(h,w)
-        #     # print(int((hr.shape[0]-h*32)/2), int(hr.shape[0]-(hr.shape[0]-h*32)/2))
-        #     # assert(1==2)
-        #     hr = hr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-        #     lr = lr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-
-        # if self.center_crop_hr_size:
-        #     hr, lr = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size)
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -262,9 +217,7 @@ class Rain200L_Dataset(data.Dataset):
         
         pairs = []
         for idx, f_name in enumerate(low_list):
-            # print(idx, f_name)
             if self.split == 'val':
-                # print(f_name, f_name[0:len(f_name)-9]+'_clean.png')
                 pairs.append(
                     [cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'low', f_name)), cv2.COLOR_BGR2RGB),
                     #  cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'high', f_name.split('_')[0]+'.jpg')), cv2.COLOR_BGR2RGB), 
@@ -287,10 +240,6 @@ class Rain200L_Dataset(data.Dataset):
     def __getitem__(self, item):
             
         lr, hr, lr2, f_name = self.pairs[item]
-        # print('item', item, index, f_name)
-        # hr = hr[0:480, 0:720, :]
-        # lr = lr[0:480, 0:720, :]
-        # print(f_name, hr.shape, lr.shape, self.crop_size)
 
 
         if self.use_crop and self.split != 'val':
@@ -299,31 +248,6 @@ class Rain200L_Dataset(data.Dataset):
             lr = cv2.copyMakeBorder(lr, 0,7,0,7, cv2.BORDER_REFLECT)
             lr2 = cv2.copyMakeBorder(lr2, 0,7,0,7, cv2.BORDER_REFLECT)
 
-            # if lr.shape[0] > lr.shape[1]:
-            #     hr = hr[0:480, 0:320, :]
-            #     lr = lr[0:480, 0:320, :]
-            # else:
-            #     hr = hr[0:320, 0:480, :]
-            #     lr = lr[0:320, 0:480, :]                
-            # print(hr.shape)
-            # lr = cv2.resize(lr, (480, 480))
-            # hr = cv2.resize(hr, (480, 480))
-            # lr = cv2.resize(lr, (lr.shape[1] // 16 * 16, lr.shape[0] // 16 * 16))
-            # hr = cv2.resize(hr, (hr.shape[1] // 16 * 16, hr.shape[0] // 16 * 16))
-            # print(hr.shape)
-
-        # elif self.use_crop and self.split == 'val':
-        #     h = int(hr.shape[0]/32)
-        #     w = int(hr.shape[1]/32)
-        #     # print(hr.shape)
-        #     # print(h,w)
-        #     # print(int((hr.shape[0]-h*32)/2), int(hr.shape[0]-(hr.shape[0]-h*32)/2))
-        #     # assert(1==2)
-        #     hr = hr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-        #     lr = lr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-
-        # if self.center_crop_hr_size:
-        #     hr, lr = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size)
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -337,17 +261,9 @@ class Rain200L_Dataset(data.Dataset):
         lr2 = self.to_tensor(lr2)
         
 
-        # print(f_name, hr.shape, lr.shape)
-
         [lr, hr, lr2] = transform_augment(
                 [lr, hr, lr2], split=self.split, min_max=(-1, 1))
         
-        # Compute rain streak image (Rain = LQ - GT)
-        # rain = torch.clamp(lr - hr, min=-1, max=1)  # Ensure values stay in range [-1, 1]
-        # rain_weight = torch.where(rain > 0, 10.0, 1.0)  # 雨条区域权重大
-        
-        # self.save_rain_image(rain, f_name)
-        # print(f_name)
         return {'LQ': lr, 'GT': hr, 'LQ2': lr2,'LQ_path': f_name, 'GT_path': f_name}
 
     def save_rain_image(self, rain, file_name):
@@ -413,37 +329,13 @@ class Rain200H_Dataset(data.Dataset):
 
     def __getitem__(self, item):
         lr, hr, lr2, f_name = self.pairs[item]
-        
-        # hr = hr[0:480, 0:720, :]
-        # lr = lr[0:480, 0:720, :]
-        # print(f_name, hr.shape, lr.shape, self.crop_size)
-        
 
         if self.use_crop and self.split != 'val':
             hr, lr = random_crop(hr, lr, self.crop_size)
         elif self.split == 'val':
             lr = cv2.copyMakeBorder(lr, 0,7,0,7, cv2.BORDER_REFLECT)
             lr2 = cv2.copyMakeBorder(lr2, 0,7,0,7, cv2.BORDER_REFLECT)
-            # print(lr.shape)
-            # print(hr.shape)
-            # lr = cv2.resize(lr, (lr.shape[1] // 16 * 16, lr.shape[0] // 16 * 16))
-            # hr = cv2.resize(hr, (hr.shape[1] // 16 * 16, hr.shape[0] // 16 * 16))
-            # lr = cv2.resize(lr, (lr.shape[0] // 16 * 16, lr.shape[1] // 16 * 16))
-            # hr = cv2.resize(hr, (hr.shape[0] // 16 * 16, hr.shape[1] // 16 * 16))
-            # print(hr.shape)
 
-        # elif self.use_crop and self.split == 'val':
-        #     h = int(hr.shape[0]/32)
-        #     w = int(hr.shape[1]/32)
-        #     # print(hr.shape)
-        #     # print(h,w)
-        #     # print(int((hr.shape[0]-h*32)/2), int(hr.shape[0]-(hr.shape[0]-h*32)/2))
-        #     # assert(1==2)
-        #     hr = hr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-        #     lr = lr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-
-        # if self.center_crop_hr_size:
-        #     hr, lr = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size)
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -455,18 +347,6 @@ class Rain200H_Dataset(data.Dataset):
         hr = self.to_tensor(hr)
         lr = self.to_tensor(lr)
         lr2 = self.to_tensor(lr2)
-
-        # if self.split == 'val':
-        #     img_multiple_of = 8
-        #     print(lr.shape)
-        #     height,width = lr.shape[1], lr.shape[2]
-        #     H,W = ((height+img_multiple_of)//img_multiple_of)*img_multiple_of, ((width+img_multiple_of)//img_multiple_of)*img_multiple_of
-        #     padh = H-height if height%img_multiple_of!=0 else 0
-        #     padw = W-width if width%img_multiple_of!=0 else 0
-        #     print(padh, padw)
-        #     lr = F.pad(lr, (0,padw,0,padh), 'reflect')
-        #     print(lr.shape)
-        # print(f_name, hr.shape, lr.shape)
 
         [lr, hr, lr2] = transform_augment(
                 [lr, hr, lr2], split=self.split, min_max=(-1, 1))
@@ -536,26 +416,10 @@ class RainHeavy_Dataset(data.Dataset):
         
         hr = hr[0:480, 0:720, :]
         lr = lr[0:480, 0:720, :]
-        # print(f_name, hr.shape, lr.shape)
 
         if self.use_crop and self.split != 'val':
             hr, lr = random_crop(hr, lr, self.crop_size)
-        # elif self.use_crop and self.split == 'val':
-        #     hr = hr[8:392, 12:588, :]
-        #     lr = lr[8:392, 12:588, :]
 
-        # elif self.use_crop and self.split == 'val':
-        #     h = int(hr.shape[0]/32)
-        #     w = int(hr.shape[1]/32)
-        #     # print(hr.shape)
-        #     # print(h,w)
-        #     # print(int((hr.shape[0]-h*32)/2), int(hr.shape[0]-(hr.shape[0]-h*32)/2))
-        #     # assert(1==2)
-        #     hr = hr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-        #     lr = lr[int((hr.shape[0]-h*32)/2):int(hr.shape[0]-(hr.shape[0]-h*32)/2), int((hr.shape[1]-w*32)/2):int(hr.shape[1]-(hr.shape[1]-w*32)/2), :]
-
-        # if self.center_crop_hr_size:
-        #     hr, lr = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size)
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -566,8 +430,6 @@ class RainHeavy_Dataset(data.Dataset):
 
         hr = self.to_tensor(hr)
         lr = self.to_tensor(lr)
-
-        # print(f_name, hr.shape, lr.shape)
 
         [lr, hr] = transform_augment(
                 [lr, hr], split=self.split, min_max=(-1, 1))
@@ -625,10 +487,6 @@ class Raindrop_Dataset(data.Dataset):
 
         if self.use_crop and self.split != 'val':
             hr, lr = random_crop(hr, lr, self.crop_size)
-        # elif self.use_crop and self.split == 'val':
-        #     hr = hr[8:392, 12:588, :]
-        #     lr = lr[8:392, 12:588, :]
-
 
         if self.use_flip:
             hr, lr = random_flip(hr, lr)
@@ -699,7 +557,37 @@ class UnderwaterB_Dataset(data.Dataset):
                      os.path.join(folder_path, 'reference-890', f_name),
                      f_name.split('.')[0]])
         return pairs
-
+    
+    def pad_image_to_multiple_of_16(self, image):
+        """
+        Reads an image, converts it to RGB, and pads it so that its width and height are multiples of 16.
+        """
+        # Open the image and convert to RGB
+        # image = Image.open(image_path).convert("RGB")
+        
+        # Convert the PIL image to a NumPy array
+        img_array = np.array(image)
+        
+        # Get the current dimensions of the image
+        height, width, _ = img_array.shape
+        
+        # Calculate the padding needed to make dimensions multiples of 16
+        pad_bottom = (16 - height % 16) % 16
+        pad_right = (16 - width % 16) % 16
+        
+        # Apply padding using cv2.copyMakeBorder
+        padded_image = cv2.copyMakeBorder(
+            img_array, 
+            0, pad_bottom,  # Top and bottom padding
+            0, pad_right,   # Left and right padding
+            cv2.BORDER_REFLECT
+        )
+        
+        # Convert the padded NumPy array back to a PIL image
+        padded_image = Image.fromarray(padded_image)
+        
+        return padded_image
+    
     def __getitem__(self, item):
         raw_img_path, gt_img_path, f_name = self.pairs[item]
         raw_img = Image.open(raw_img_path)
@@ -710,22 +598,6 @@ class UnderwaterB_Dataset(data.Dataset):
 
         if self.split == 'train':
 
-            # ### data process 1
-            # i, j, h, w = transforms.RandomResizedCrop(self.crop_size).get_params(raw_img, (0.08, 1.0),(3. / 4., 4. / 3.))   
-            # raw_cropped = F.resized_crop(raw_img, i, j, h, w, (self.crop_size, self.crop_size), InterpolationMode.BICUBIC)
-            # gt_cropped = F.resized_crop(gt_img, i, j, h, w, (self.crop_size, self.crop_size), InterpolationMode.BICUBIC)
-
-            # raw_cropped = transforms.ToTensor()(raw_cropped)
-            # gt_cropped = transforms.ToTensor()(gt_cropped)
-
-            # if np.random.rand(1) < 0.5:  # flip horizonly
-            #     raw_cropped = torch.flip(raw_cropped, [2])
-            #     gt_cropped = torch.flip(gt_cropped, [2])
-            # if np.random.rand(1) < 0.5:  # flip vertically
-            #     raw_cropped = torch.flip(raw_cropped, [1])
-            #     gt_cropped = torch.flip(gt_cropped, [1])
-
-            ### data process 2
             raw_cropped = Image.open(raw_img_path).convert("RGB")
             gt_cropped = Image.open(gt_img_path).convert("RGB")
 
@@ -750,15 +622,10 @@ class UnderwaterB_Dataset(data.Dataset):
             gt_img = gt_cropped
             
         elif self.split == "val":
-            # raw_img = transforms.Resize((img_h // 16 * 16, img_w // 16 * 16))(raw_img)
-            raw_img = transforms.Resize((320, 320))(raw_img)
-            
+            raw_img = self.pad_image_to_multiple_of_16(raw_img)
             raw_img = transforms.ToTensor()(raw_img)
-            # gt_img = transforms.Resize((img_h // 32 * 32, img_w // 32 * 32))(gt_img)
             gt_img = transforms.ToTensor()(gt_img)
             
-        # print(f_name, gt_img.shape, raw_img.shape)
-
         [raw_img, gt_img] = transform_augment(
                 [raw_img, gt_img], split=self.split, min_max=(-1, 1))
 
@@ -794,11 +661,8 @@ class LOLv1_Dataset(data.Dataset):
         for idx, f_name in enumerate(low_list):
             
             if self.split == 'val':
-                # print(os.path.join(folder_path, 'mid', f_name))
-                # print(os.path.join(folder_path, 'high', f_name))
+
                 f_name1 = f_name
-                # f_name2 = f_name.replace('lq', 'gt')
-                # f_name3 = f_name.replace('lq', 'normal_noadjust')
                 pairs.append(
                     [cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'low', f_name)), cv2.COLOR_BGR2RGB),  
                      cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'high', f_name)), cv2.COLOR_BGR2RGB),
